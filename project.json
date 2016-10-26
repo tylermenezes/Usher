@@ -1,0 +1,19 @@
+{
+  "version": "1.0.0-*",
+  "buildOptions": {
+    "debugType": "portable",
+    "emitEntryPoint": true
+  },
+  "frameworks": {
+    "net451": {
+      "imports": [
+        "portable-net45+win8"
+      ],
+      "dependencies": {
+        "ZWaveLib": "1.0.14",
+        "YamlDotNet": "4.0.1-pre288",
+        "NLog.Config": "4.3.10"
+      }
+    }
+  }
+}
