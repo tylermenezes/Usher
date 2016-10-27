@@ -5,6 +5,7 @@ namespace Usher{
             Utilities.Logger.Info("Starting up!");
             Platforms.Supervisor.Instance.Start().Wait();
             PluginFramework.Supervisor.Instance.Start();
+            Config.Devices.Instance.Save();
         }
     }
 }

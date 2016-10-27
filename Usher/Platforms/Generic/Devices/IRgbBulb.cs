@@ -2,7 +2,7 @@ using Usher.Platforms.Generic.Abilities;
 
 namespace Usher.Platforms.Generic.Devices
 {
-    public interface IRgbBulb : ITogglable, IDimmable, IRgb, IWhiteBalance, IDevice
+    public interface IRgbBulb : IRgb, IWhiteBalance, IDimmableBulb, ISimpleBulb, IDevice
     {
         int WW { get; set; }
         int CW { get; set; }

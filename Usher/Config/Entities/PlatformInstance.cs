@@ -6,7 +6,7 @@ namespace Usher.Config.Entities
     {
         public string Platform { get; set; }
         public string Instance { get; set; }
-        public List<string> Config { get; set; }
+        public Dictionary<string, string> Config { get; set; }
 
         public List<Node> Nodes { get; set; }
     }

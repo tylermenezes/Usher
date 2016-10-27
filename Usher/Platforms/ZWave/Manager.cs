@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using Usher.Platforms.Generic;
 using Usher.Platforms.Generic.Devices;
@@ -15,7 +16,7 @@ namespace Usher.Platforms.ZWave
 
         protected override IGateway getGateway(string instance, Dictionary<string, string> config)
         {
-            return new Gateway(instance, config["port"]);
+            return new Gateway(this.Instance, config["port"]);
         }
     }
 }

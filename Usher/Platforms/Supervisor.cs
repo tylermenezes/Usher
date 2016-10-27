@@ -30,18 +30,20 @@ namespace Usher.Platforms
             // Instantiate platform managers from the config file
             foreach (Type t in pManagerTypes) {
                 var ctor = t.GetConstructors().First();
-                var config = new Dictionary<string, string>{
-                    {"port", "/dev/ttyACM0"}
-                };
+                var attr = (ManagerAttribute)t.GetCustomAttributes(typeof(ManagerAttribute), true).First();
 
-                var manager = (IManager)ctor.Invoke(new object[]{"devACM0", config});
-                manager.OnReady += OnManagerReady;
-                manager.OnStop += OnManagerStopped;
-                manager.OnError += OnManagerError;
+                foreach (Config.Entities.PlatformInstance config
+                            in Config.Devices.Instance.Platforms.Where(p => p.Platform == attr.Id).ToList()) {
 
-                Utilities.Logger.Info("Loaded manager {0}", manager.Uri);
+                    var manager = (IManager)ctor.Invoke(new object[]{config.Instance, config.Config});
+                    manager.OnReady += OnManagerReady;
+                    manager.OnStop += OnManagerStopped;
+                    manager.OnError += OnManagerError;
 
-                PlatformManagers.Add(manager);
+                    Utilities.Logger.Info("Loaded manager {0}", manager.Uri);
+
+                    PlatformManagers.Add(manager);
+                }
             }
         }
 

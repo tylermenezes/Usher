@@ -67,6 +67,11 @@ namespace Usher.Platforms.ZWave.Devices
                     });
             }
             Devices = devices;
+            devices
+                .ForEach(d => {
+                    if (string.IsNullOrEmpty(d.Name)) d.Name = "Untitled";
+                });
+            Config.Devices.Instance.Save();
 
             Thread.Sleep(4000);
             OnReady(this);

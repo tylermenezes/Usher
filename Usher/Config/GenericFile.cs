@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Reflection;
 using YamlDotNet;
@@ -51,7 +52,7 @@ namespace Usher.Config
         {
             return Path.Combine(
                 Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
-                "config", typeof(T).Name.ToLower()
+                "config", String.Format("{0}.yml", typeof(T).Name.ToLower())
             );
         }
     }

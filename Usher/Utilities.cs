@@ -16,7 +16,8 @@ namespace Usher
             consoleTarget.Name = "Console";
             consoleTarget.Layout = @"${date:format=HH\:mm\:ss} ${logger} ${message}";
             consoleTarget.DetectConsoleAvailable = false;
-            logConfig.LoggingRules.Add(new LoggingRule("*", LogLevel.Trace, consoleTarget));
+            logConfig.LoggingRules.Add(new LoggingRule("Usher", LogLevel.Trace, consoleTarget));
+            logConfig.LoggingRules.Add(new LoggingRule("ZWaveLib.*", LogLevel.Error, consoleTarget));
 
             logConfig.AddTarget(consoleTarget);
             
