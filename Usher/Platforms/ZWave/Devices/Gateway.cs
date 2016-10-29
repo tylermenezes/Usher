@@ -1,4 +1,5 @@
 using ZWaveLib;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
@@ -60,11 +61,14 @@ namespace Usher.Platforms.ZWave.Devices
             var devices = new List<IDevice>();
             foreach (ZWaveNode node in controller.Nodes)
             {
+                Utilities.Logger.Debug("Node {0} discovered.", node.Id);
                 if (RgbBulb.IsNodeInstance(node))
                     devices.Add(new RgbBulb {
                         gateway = this,
                         node = node
                     });
+                else if (Remote.IsNodeInstance(node))
+                    devices.Add(new Remote(this, node));
             }
             Devices = devices;
             devices
@@ -74,6 +78,7 @@ namespace Usher.Platforms.ZWave.Devices
             Config.Devices.Instance.Save();
 
             Thread.Sleep(4000);
+
             OnReady(this);
         }
 

@@ -33,11 +33,13 @@ namespace Usher.PluginFramework.Base.Residential
         protected int[] desiredRgbw = new int[]{0, 0, 0, 255, 0};
         public void SetRgb(int r, int g, int b, int ww, int cw)
         {
-            desiredRgbw = new int[]{0, 0, 0, 0, 0};
-            Devices
-                .OfType<IRgbBulb>()
-                .ToList()
-                .ForEach(bulb => bulb.SetRgb(r, g, b, ww, cw));
+            desiredRgbw = new int[]{r, g, b, ww, cw};
+            if (!isLocked) {
+                Devices
+                    .OfType<IRgbBulb>()
+                    .ToList()
+                    .ForEach(bulb => bulb.SetRgb(r, g, b, ww, cw));
+            }
         }
 
         protected decimal desiredBrightness = 0.0M;
@@ -50,31 +52,34 @@ namespace Usher.PluginFramework.Base.Residential
             set
             {
                 desiredBrightness = value;
-                Devices
-                    .OfType<IDimmableBulb>()
-                    .ToList()
-                    .ForEach(bulb => bulb.Dim = value);
+                if (!isLocked) {
+                    Devices
+                        .OfType<IDimmableBulb>()
+                        .ToList()
+                        .ForEach(bulb => bulb.Dim = value);
+                }
             }
         }
 
-        public void forceOn()
+        protected bool isLocked = false;
+        public void Lock(decimal brightness, int r, int g, int b, int ww, int cw)
         {
+            isLocked = true;
             Devices
-                .OfType<ISimpleBulb>()
+                .OfType<IDimmableBulb>()
                 .ToList()
-                .ForEach(bulb => bulb.IsOn = true);
+                .ForEach(bulb => bulb.Dim = brightness);
             Devices
                 .OfType<IRgbBulb>()
                 .ToList()
-                .ForEach(bulb => bulb.SetRgb(0, 0, 0, 255, 0));
+                .ForEach(bulb => bulb.SetRgb(r, g, b, ww, cw));
         }
 
-        public void forceOff()
+        public void Unlock()
         {
-            Devices
-                .OfType<ISimpleBulb>()
-                .ToList()
-                .ForEach(bulb => bulb.IsOn = false);
+            isLocked = false;
+            SetRgb();
+            Dim = Dim;
         }
 
         public void restoreBeforeForce()
