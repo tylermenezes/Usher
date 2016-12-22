@@ -33,7 +33,6 @@ namespace Usher.Plugins.TylerMenezes.Unifi
 
         public void DispatchUpdate()
         {
-            Utilities.Logger.Info($"{Uri} updated.");
             OnChange?.Invoke(_manager.Clients.ToArray());
         }
     }
