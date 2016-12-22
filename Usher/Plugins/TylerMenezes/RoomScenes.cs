@@ -30,6 +30,7 @@ namespace Usher.Plugins.TylerMenezes
 
         public static void Sunrise(this Room room, int duration)
         {
+            room.Unlock();
             room.RunScene(() => {
                 room.SunPhaseHorizon(duration/3);
                 room.SunPhaseRise(duration/3);
@@ -105,40 +106,40 @@ namespace Usher.Plugins.TylerMenezes
                 stepDelta *= -1;
             }
 
-            decimal val = start;
-            for (int sec = 0; sec <= duration; sec+=StepInterval) {
+            var val = start;
+            for (var sec = 0; sec <= duration; sec+=StepInterval) {
                 step(val, ((decimal)(reverse ? (duration-sec) : sec)/duration));
                 val += stepDelta*StepInterval;
                 Thread.Sleep(StepInterval*1000);
             }
         }
-        public static void HsvToRgb(double h, double S, double V, out int r, out int g, out int b)
+        public static void HsvToRgb(double h, double s, double v, out int r, out int g, out int b)
         {    
-            double H = h;
+            var H = h;
             while (H < 0) { H += 360; };
             while (H >= 360) { H -= 360; };
             double R, G, B;
-            if (V <= 0)
+            if (v <= 0)
                 { R = G = B = 0; }
-            else if (S <= 0)
+            else if (s <= 0)
             {
-                R = G = B = V;
+                R = G = B = v;
             }
             else
             {
-                double hf = H / 60.0;
-                int i = (int)Math.Floor(hf);
-                double f = hf - i;
-                double pv = V * (1 - S);
-                double qv = V * (1 - S * f);
-                double tv = V * (1 - S * (1 - f));
+                var hf = H / 60.0;
+                var i = (int)Math.Floor(hf);
+                var f = hf - i;
+                var pv = v * (1 - s);
+                var qv = v * (1 - s * f);
+                var tv = v * (1 - s * (1 - f));
                 switch (i)
                 {
 
                 // Red is the dominant color
 
                 case 0:
-                    R = V;
+                    R = v;
                     G = tv;
                     B = pv;
                     break;
@@ -147,12 +148,12 @@ namespace Usher.Plugins.TylerMenezes
 
                 case 1:
                     R = qv;
-                    G = V;
+                    G = v;
                     B = pv;
                     break;
                 case 2:
                     R = pv;
-                    G = V;
+                    G = v;
                     B = tv;
                     break;
 
@@ -161,18 +162,18 @@ namespace Usher.Plugins.TylerMenezes
                 case 3:
                     R = pv;
                     G = qv;
-                    B = V;
+                    B = v;
                     break;
                 case 4:
                     R = tv;
                     G = pv;
-                    B = V;
+                    B = v;
                     break;
 
                 // Red is the dominant color
 
                 case 5:
-                    R = V;
+                    R = v;
                     G = pv;
                     B = qv;
                     break;
@@ -180,12 +181,12 @@ namespace Usher.Plugins.TylerMenezes
                 // Just in case we overshoot on our math by a little, we put these here. Since its a switch it won't slow us down at all to put these here.
 
                 case 6:
-                    R = V;
+                    R = v;
                     G = tv;
                     B = pv;
                     break;
                 case -1:
-                    R = V;
+                    R = v;
                     G = pv;
                     B = qv;
                     break;
@@ -194,7 +195,7 @@ namespace Usher.Plugins.TylerMenezes
 
                 default:
                     //LFATAL("i Value error in Pixel conversion, Value is %d", i);
-                    R = G = B = V; // Just pretend its black/white
+                    R = G = B = v; // Just pretend its black/white
                     break;
                 }
             }

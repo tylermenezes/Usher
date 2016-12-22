@@ -11,24 +11,26 @@ namespace Usher.Platforms.ZWave.Devices
     public abstract class ZWaveEndDevice<T> : GenericDevice
         where T : ZWaveEndDevice<T>, new()
     {
-        public override string Provider { get { return "zwave"; }}
-        public override string Instance { get { return gateway.InstanceId; }}
+        public override string Provider => "zwave";
+        public override string Instance => Gateway.InstanceId;
         public override string Id
         {
             get
             {
-                return node.Id.ToString();
+                return ZWaveNode.Id.ToString();
             }
             protected set {}
         }
-        public Gateway gateway;
-        public ZWaveNode node;
+        public Gateway Gateway;
+        public ZWaveNode ZWaveNode;
 
         public static bool IsNodeInstance(ZWaveNode node)
         {
-            var requiredClasses = (int[])typeof(T).GetField("requiredClasses", BindingFlags.NonPublic | BindingFlags.Static)
+            // ReSharper disable once PossibleNullReferenceException (if you don't specify requiredClasses you deserve all the
+            // exceptions you get!)
+            var requiredClasses = (int[])typeof(T).GetField("RequiredClasses", BindingFlags.NonPublic | BindingFlags.Static)
                                     .GetValue(null);
-            foreach (int cl in requiredClasses)
+            foreach (var cl in requiredClasses)
             {
                 if (!node.CommandClasses.Select(c => (int)c.Id).Contains(cl))
                     return false;
@@ -44,7 +46,7 @@ namespace Usher.Platforms.ZWave.Devices
             message.AddRange(argv);
 
             var semaphor = new SemaphoreSlim(0, 1);
-            var resp = node.SendDataRequest(message.ToArray());
+            var resp = ZWaveNode.SendDataRequest(message.ToArray());
             
             // Create the waiter thread.
             (new Thread((object threadData) => {
@@ -52,11 +54,11 @@ namespace Usher.Platforms.ZWave.Devices
                 var s = (SemaphoreSlim)o[0];
                 var m = (ZWaveMessage)o[1];
 
-                string debugPacket = m.RawData.ToList()
-                                .Select(p => String.Format("{0:X2}", p))
-                                .Aggregate("", (acc, x) => String.Format("{0} {1}", acc, x))
+                var debugPacket = m.RawData.ToList()
+                                .Select(p => $"{p:X2}")
+                                .Aggregate("", (acc, x) => $"{acc} {x}")
                                 .Substring(1);
-                Utilities.Logger.Debug(String.Format("zwave write: (node {0}) <- {1}", node.Id, debugPacket));
+                Utilities.Logger.Debug($"zwave write: (node {ZWaveNode.Id}) <- {debugPacket}");
 
                 m.Wait();
                 s.Release();

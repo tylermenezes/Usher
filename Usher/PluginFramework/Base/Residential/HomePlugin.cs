@@ -4,12 +4,12 @@ namespace Usher.PluginFramework.Base.Residential
 {
     public abstract class HomePlugin
     {
-        protected delegate void alarmActivatedDelegate();
-        protected Thread setAlarm(TimeSpan time, bool includeWeekends, alarmActivatedDelegate onAlarm)
+        protected delegate void AlarmActivatedDelegate();
+        protected Thread SetAlarm(TimeSpan time, bool includeWeekends, AlarmActivatedDelegate onAlarm)
         {
             return new Thread(() => {
                 while(true) {
-                    DateTime nextEndTime = DateTime.Today.Add(time);
+                    var nextEndTime = DateTime.Today.Add(time);
                     if (nextEndTime < DateTime.Now) {
                         nextEndTime = nextEndTime.AddDays(1);
                     }
@@ -21,7 +21,7 @@ namespace Usher.PluginFramework.Base.Residential
                         }
                     }
 
-                    TimeSpan delta = nextEndTime - DateTime.Now;
+                    var delta = nextEndTime - DateTime.Now;
                     Utilities.Logger.Debug("Alarm handler woke up with {0} left.", delta);
 
                     if (delta.TotalSeconds > 5) {

@@ -9,8 +9,8 @@ namespace Usher.Platforms.ZWave.Devices
 {
    public class Gateway : GenericDevice, IGateway
     {
-        public override string Provider { get { return "zwave"; }}
-        public override string Instance { get { return InstanceId; }}
+        public override string Provider => "zwave";
+        public override string Instance => InstanceId;
 
         public string InstanceId { get; private set;}
 
@@ -20,52 +20,52 @@ namespace Usher.Platforms.ZWave.Devices
 
         public IEnumerable<IDevice> Devices { get; private set; }
 
-        public ZWaveController controller;
+        public ZWaveController Controller;
         public Gateway(string instance, string serialPort)
         {
             InstanceId = instance;
-            controller = new ZWaveController(serialPort);
-            controller.ControllerStatusChanged += OnControllerStatusChanged;
-            controller.DiscoveryProgress += OnDiscoveryStatusChanged;
+            Controller = new ZWaveController(serialPort);
+            Controller.ControllerStatusChanged += OnControllerStatusChanged;
+            Controller.DiscoveryProgress += OnDiscoveryStatusChanged;
         }
 
-        SemaphoreSlim startingSemaphor;
+        SemaphoreSlim _startingSemaphor;
         public Task Start()
         {
-            if (startingSemaphor == null)
+            if (_startingSemaphor == null)
             {
-                startingSemaphor = new SemaphoreSlim(0, 1);
-                controller.Connect();
+                _startingSemaphor = new SemaphoreSlim(0, 1);
+                Controller.Connect();
             }
-            return startingSemaphor.WaitAsync();
+            return _startingSemaphor.WaitAsync();
         }
 
-        SemaphoreSlim stoppingSemaphor;
+        SemaphoreSlim _stoppingSemaphor;
         public Task Stop()
         {
-            if (stoppingSemaphor == null)
+            if (_stoppingSemaphor == null)
             {
-                stoppingSemaphor = new SemaphoreSlim(0, 1);
-                controller.Disconnect();
+                _stoppingSemaphor = new SemaphoreSlim(0, 1);
+                Controller.Disconnect();
             }
-            return stoppingSemaphor.WaitAsync();
+            return _stoppingSemaphor.WaitAsync();
         }
 
         public void Heal()
         {
-            controller.HealNetwork();
+            Controller.HealNetwork();
         }
 
-        protected void updateNodeCache()
+        protected void UpdateNodeCache()
         {
             var devices = new List<IDevice>();
-            foreach (ZWaveNode node in controller.Nodes)
+            foreach (var node in Controller.Nodes)
             {
                 Utilities.Logger.Debug("Node {0} discovered.", node.Id);
                 if (RgbBulb.IsNodeInstance(node))
                     devices.Add(new RgbBulb {
-                        gateway = this,
-                        node = node
+                        Gateway = this,
+                        ZWaveNode = node
                     });
                 else if (Remote.IsNodeInstance(node))
                     devices.Add(new Remote(this, node));
@@ -75,11 +75,9 @@ namespace Usher.Platforms.ZWave.Devices
                 .ForEach(d => {
                     if (string.IsNullOrEmpty(d.Name)) d.Name = "Untitled";
                 });
-            Config.Devices.Instance.Save();
+            Usher.Config.Devices.Instance.Save();
 
-            Thread.Sleep(4000);
-
-            OnReady(this);
+            if (devices.Count > 0) { Thread.Sleep(8000); OnReady?.Invoke(this); }
         }
 
         /// <summary>
@@ -92,20 +90,20 @@ namespace Usher.Platforms.ZWave.Devices
             switch (args.Status)
             {
                 case ControllerStatus.Connected:
-                    controller.Initialize();
+                    Controller.Initialize();
                     break;
                 case ControllerStatus.Disconnected:
-                    if (stoppingSemaphor != null) {
-                        stoppingSemaphor.Release();
-                        stoppingSemaphor = null;
+                    if (_stoppingSemaphor != null) {
+                        _stoppingSemaphor.Release();
+                        _stoppingSemaphor = null;
                     }
-                    OnDisconnected(this);
+                    OnDisconnected?.Invoke(this);
                     break;
                 case ControllerStatus.Error:
-                    OnError(this);
+                    OnError?.Invoke(this);
                     break;
                 case ControllerStatus.Ready:
-                    controller.Discovery();
+                    Controller.Discovery();
                     break;
                 case ControllerStatus.Initializing:
                 default:
@@ -118,14 +116,14 @@ namespace Usher.Platforms.ZWave.Devices
             switch (args.Status)
             {
                 case DiscoveryStatus.DiscoveryEnd:
-                    updateNodeCache();
-                    if (startingSemaphor != null) {
-                        startingSemaphor.Release();
-                        startingSemaphor = null;
+                    UpdateNodeCache();
+                    if (_startingSemaphor != null) {
+                        _startingSemaphor.Release();
+                        _startingSemaphor = null;
                     }
                     break;
                 case DiscoveryStatus.DiscoveryError:
-                    OnError(this);
+                    OnError?.Invoke(this);
                     break;
                 case DiscoveryStatus.DiscoveryStart:
                 default:

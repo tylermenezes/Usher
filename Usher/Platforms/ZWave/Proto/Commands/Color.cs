@@ -9,6 +9,6 @@ namespace Usher.Platforms.ZWave.Proto.Commands
         Set = 0x05,
 
         StartCapabilityLevelChange = 0x06,
-        ColorCmd_StopStateChange = 0x07
+        StopStateChange = 0x07
     }
 }

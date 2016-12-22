@@ -6,7 +6,7 @@ namespace Usher.Platforms.ZWave.Devices
 {
     public class RgbBulb : ZWaveEndDevice<RgbBulb>, IRgbBulb
     {
-        protected static int[] requiredClasses = new int[] { 51 };
+        protected static int[] RequiredClasses = new int[] { 51 };
 
         private decimal _dim;
         public decimal Dim {
@@ -14,7 +14,7 @@ namespace Usher.Platforms.ZWave.Devices
             set
             {
                 _dim = value;
-                int level = (int)(value*99);
+                var level = (int)(value*99);
                 SendRequest(ZWave.Proto.CommandClass.SwitchMultilevel,
                             0x01,
                             new byte[] {(byte)level, 0x00}
@@ -22,7 +22,7 @@ namespace Usher.Platforms.ZWave.Devices
             }
         }
 
-        private Dictionary<string, float[]> gamuts = new Dictionary<string, float[]>{
+        private readonly Dictionary<string, float[]> _gamuts = new Dictionary<string, float[]>{
             {"0086-0062", new float[]{1.0F, 0.94F, 0.17F}}
         };
         private int[] _color = new int[] {0,0,0,0,0};
@@ -32,12 +32,11 @@ namespace Usher.Platforms.ZWave.Devices
             _color = new int[]{r,g,b,ww,cw};
 
             // Get and apply the gamut
-            var gamutLookup = String.Format("{0}-{1}",
-                                           node.ManufacturerSpecific.ManufacturerId,
-                                           node.ManufacturerSpecific.ProductId);
+            var gamutLookup =
+                $"{ZWaveNode.ManufacturerSpecific.ManufacturerId}-{ZWaveNode.ManufacturerSpecific.ProductId}";
             var gamut = new float[]{1.0F, 1.0F, 1.0F};
-            if (gamuts.ContainsKey(gamutLookup)) {
-                gamut = gamuts[gamutLookup];
+            if (_gamuts.ContainsKey(gamutLookup)) {
+                gamut = _gamuts[gamutLookup];
             }
             r = (int)(r * gamut[0]);
             g = (int)(g * gamut[1]);
@@ -72,7 +71,7 @@ namespace Usher.Platforms.ZWave.Devices
         {
             set
             {
-                int[] rgb = Usher.Utilities.ColorTemperatureToRgb(value);
+                var rgb = Usher.Utilities.ColorTemperatureToRgb(value);
                 _color = new int[]{rgb[0], rgb[1], rgb[2], 0, 0};
                 SetRgb();
             }
@@ -114,7 +113,7 @@ namespace Usher.Platforms.ZWave.Devices
                 SetRgb();
             }
         }
-        public int WW
+        public int Ww
         {
             get
             {
@@ -126,7 +125,7 @@ namespace Usher.Platforms.ZWave.Devices
                 SetRgb();
             }
         }
-        public int CW
+        public int Cw
         {
             get
             {

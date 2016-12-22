@@ -9,12 +9,12 @@ namespace Usher.Platforms.ZWave
     [ManagerAttribute("zwave")]
     class Manager : GatewayBasedManager, IManager
     {
-        public override string Provider { get { return "zwave"; }}
+        public override string Provider => "zwave";
 
         public Manager(string instance, Dictionary<string, string> args) : base(instance, args)
         {}
 
-        protected override IGateway getGateway(string instance, Dictionary<string, string> config)
+        protected override IGateway GetGateway(string instance, Dictionary<string, string> config)
         {
             return new Gateway(this.Instance, config["port"]);
         }

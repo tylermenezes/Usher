@@ -4,6 +4,19 @@
     "debugType": "portable",
     "emitEntryPoint": true
   },
+  "configurations": {
+    "Debug": {
+      "compilationOptions": {
+        "define": ["DEBUG", "TRACE"]
+      }
+    },
+    "Release": {
+      "compilationOptions": {
+        "define": ["RELEASE", "TRACE"],
+        "optimize": true
+      }
+    }
+  },
   "frameworks": {
     "net451": {
       "imports": [
@@ -12,7 +25,9 @@
       "dependencies": {
         "ZWaveLib": "1.0.14",
         "YamlDotNet": "4.0.1-pre288",
-        "NLog.Config": "4.3.10"
+        "NLog.Config": "4.3.10",
+		"Newtonsoft.Json": "9.0.1",
+		"Microsoft.Net.Http": "2.2.29"
       }
     }
   }

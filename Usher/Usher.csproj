@@ -1,0 +1,138 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{F3B9F4BB-181E-4E6D-B151-184D7810CE22}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Usher</RootNamespace>
+    <AssemblyName>Usher</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\packages\NLog.4.3.10\lib\net45\NLog.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SerialPortLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SerialPortLib.1.0.12\lib\SerialPortLib.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+    <Reference Include="YamlDotNet, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\YamlDotNet.4.0.0\lib\net35\YamlDotNet.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ZWaveLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ZWaveLib.1.0.14\lib\ZWaveLib.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Config\Devices.cs" />
+    <Compile Include="Config\Entities\Node.cs" />
+    <Compile Include="Config\Entities\PlatformInstance.cs" />
+    <Compile Include="Config\GenericFile.cs" />
+    <Compile Include="Platforms\Generic\Abilities\IDimmable.cs" />
+    <Compile Include="Platforms\Generic\Abilities\IRgb.cs" />
+    <Compile Include="Platforms\Generic\Abilities\ITogglable.cs" />
+    <Compile Include="Platforms\Generic\Abilities\IToggles.cs" />
+    <Compile Include="Platforms\Generic\Abilities\IWhiteBalance.cs" />
+    <Compile Include="Platforms\Generic\Devices\GenericDevice.cs" />
+    <Compile Include="Platforms\Generic\Devices\IPresenceSource.cs" />
+    <Compile Include="Platforms\Generic\Devices\ICommandSource.cs" />
+    <Compile Include="Platforms\Generic\Devices\IDevice.cs" />
+    <Compile Include="Platforms\Generic\Devices\IDimmableBulb.cs" />
+    <Compile Include="Platforms\Generic\Devices\IGateway.cs" />
+    <Compile Include="Platforms\Generic\Devices\IRelay.cs" />
+    <Compile Include="Platforms\Generic\Devices\IRemote.cs" />
+    <Compile Include="Platforms\Generic\Devices\IRemoteSwitch.cs" />
+    <Compile Include="Platforms\Generic\Devices\IRgbBulb.cs" />
+    <Compile Include="Platforms\Generic\Devices\ISimpleBulb.cs" />
+    <Compile Include="Platforms\Generic\Devices\ISwitch.cs" />
+    <Compile Include="Platforms\Generic\GatewayBasedManager.cs" />
+    <Compile Include="Platforms\Generic\IManager.cs" />
+    <Compile Include="Platforms\Generic\ManagerAttribute.cs" />
+    <Compile Include="Platforms\Supervisor.cs" />
+    <Compile Include="Platforms\Web\Devices\WebCommandSource.cs" />
+    <Compile Include="Platforms\Web\Manager.cs" />
+    <Compile Include="Platforms\ZWave\Devices\Gateway.cs" />
+    <Compile Include="Platforms\ZWave\Devices\Remote.cs" />
+    <Compile Include="Platforms\ZWave\Devices\RgbBulb.cs" />
+    <Compile Include="Platforms\ZWave\Devices\ZWaveEndDevice.cs" />
+    <Compile Include="Platforms\ZWave\Manager.cs" />
+    <Compile Include="Platforms\ZWave\Proto\CommandClass.cs" />
+    <Compile Include="Platforms\ZWave\Proto\Commands\Color.cs" />
+    <Compile Include="PluginFramework\Base\Residential\HomePlugin.cs" />
+    <Compile Include="PluginFramework\Base\Residential\Room.cs" />
+    <Compile Include="PluginFramework\IPlugin.cs" />
+    <Compile Include="PluginFramework\Supervisor.cs" />
+    <Compile Include="Plugins\TylerMenezes\Plugin.cs" />
+    <Compile Include="Plugins\TylerMenezes\RoomGeneric.cs" />
+    <Compile Include="Plugins\TylerMenezes\RoomScenes.cs" />
+    <Compile Include="Plugins\TylerMenezes\Unifi\Manager.cs" />
+    <Compile Include="Plugins\TylerMenezes\Unifi\UnifiApiWorker.cs" />
+    <Compile Include="Plugins\TylerMenezes\Unifi\WifiClientPresenceSource.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utilities.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <Content Include=".gitattributes" />
+    <Content Include=".gitignore" />
+    <Content Include="NLog.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Include="NLog.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="README.md" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

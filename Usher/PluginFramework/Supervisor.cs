@@ -6,16 +6,10 @@ namespace Usher.PluginFramework
 {
     class Supervisor
     {
-        protected static Supervisor _instance = new Supervisor();
-        public static Supervisor Instance
-        {
-            get {
-                return _instance;
-            }
-        }
+        public static readonly Supervisor Instance = new Supervisor();
 
-        protected List<IPlugin> _plugins = new List<IPlugin>();
-        public IEnumerable<IPlugin> Plugins { get { return _plugins; }}
+        private readonly List<IPlugin> _plugins = new List<IPlugin>();
+        public IEnumerable<IPlugin> Plugins => _plugins;
 
         protected Supervisor()
         {
@@ -25,7 +19,7 @@ namespace Usher.PluginFramework
                                 .Where(p => p.IsClass)
                                 .Where(p => typeof(IPlugin).IsAssignableFrom(p));
 
-            foreach (Type t in pManagerTypes) {
+            foreach (var t in pManagerTypes) {
                  _plugins.Add((IPlugin)t.GetConstructors().First().Invoke(new object[]{}));
                 Utilities.Logger.Info("Loaded plugin {0}", t.Name);
             }
@@ -33,7 +27,7 @@ namespace Usher.PluginFramework
 
         public void Start()
         {
-            foreach (IPlugin plugin in Plugins) {
+            foreach (var plugin in Plugins) {
                 (new Thread((object threadData) => {
                     Utilities.Logger.Info("Starting plugin {0}", plugin.GetType().Name);
                     ((IPlugin)threadData).Main();

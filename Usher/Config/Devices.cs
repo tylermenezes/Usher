@@ -17,8 +17,7 @@ namespace Usher.Config
 
             return Platforms
                     .Where(p => p.Platform.ToLower() == platform.ToLower())
-                    .Where(p => p.Instance.ToLower() == instance.ToLower())
-                    .First();
+                    .First(p => p.Instance.ToLower() == instance.ToLower());
         }
 
         public Node NodeFromUri(string uri)
@@ -26,14 +25,14 @@ namespace Usher.Config
             var pf = PlatformFromUri(uri);
             if (pf.Nodes == null) pf.Nodes = new List<Node>();
             var nodes = pf.Nodes
-                    .Where(n => n.Id == (new Uri(uri)).AbsolutePath.Substring(1));
+                    .Where(n => n.Id == (new Uri(uri)).AbsolutePath.Substring(1))
+                    .ToList();
 
             Node node;
-            if (nodes.Count() > 0) {
+            if (nodes.Any()) {
                 node = nodes.First();
             } else {
-                node = new Node();
-                node.Id = (new Uri(uri)).AbsolutePath.Substring(1);
+                node = new Node {Id = (new Uri(uri)).AbsolutePath.Substring(1)};
                 pf.Nodes.Add(node);
             }
             if (node.Tags == null) node.Tags = new List<string>();
@@ -41,7 +40,7 @@ namespace Usher.Config
             return node;
         }
 
-        protected override string serialize()
+        protected override string Serialize()
         {
             var sObject = new SerializableDevices{
                 Platforms = this.Platforms
@@ -52,13 +51,13 @@ namespace Usher.Config
             return serializer.Serialize(sObject);
         }
 
-        protected override void deserialize(string s)
+        protected override void Deserialize(string s)
         {
            var deserializer = (new DeserializerBuilder())
                                 .WithNamingConvention(new YamlDotNet.Serialization.NamingConventions.HyphenatedNamingConvention())
                                 .Build();
            var newDevices = deserializer.Deserialize<SerializableDevices>(s);
-           if (newDevices.Platforms != null) Platforms = newDevices.Platforms;
+           if (newDevices != null) Platforms = newDevices.Platforms;
         }
     }
 

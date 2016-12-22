@@ -8,51 +8,45 @@ namespace Usher.Config
     public abstract class GenericFile<T>
         where T : GenericFile<T>, new()
     {
-        private string path;
-        string content;
+        private readonly string _path;
+        string _content;
 
-        private static T _instance = new T();
-        public static T Instance
-        {
-            get
-            {
-                return _instance;
-            }
-        }
+        private static readonly T _instance = new T();
+        public static T Instance => _instance;
 
         protected GenericFile()
         {
-            path = getPath();
+            _path = GetPath();
             Reload();
         }
 
         public void Reload()
         {
-            if (!Directory.Exists(Path.GetDirectoryName(path))) {
-                Directory.CreateDirectory(Path.GetDirectoryName(path));
+            if (!Directory.Exists(Path.GetDirectoryName(_path))) {
+                Directory.CreateDirectory(Path.GetDirectoryName(_path));
             }
 
-            if (!File.Exists(path)) {
-                File.WriteAllText(path, "");
+            if (!File.Exists(_path)) {
+                File.WriteAllText(_path, "");
             }
 
-            content = File.ReadAllText(path);
-            deserialize(content);
+            _content = File.ReadAllText(_path);
+            Deserialize(_content);
         }
 
         public void Save()
         {
-            content = serialize();
-            File.WriteAllText(path, content);
+            _content = Serialize();
+            File.WriteAllText(_path, _content);
         }
 
-        protected abstract string serialize();
-        protected abstract void deserialize(string s);
-        protected virtual string getPath()
+        protected abstract string Serialize();
+        protected abstract void Deserialize(string s);
+        protected virtual string GetPath()
         {
             return Path.Combine(
                 Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
-                "config", String.Format("{0}.yml", typeof(T).Name.ToLower())
+                "config", $"{typeof(T).Name.ToLower()}.yml"
             );
         }
     }

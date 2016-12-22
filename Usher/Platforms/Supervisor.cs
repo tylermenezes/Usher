@@ -8,13 +8,7 @@ namespace Usher.Platforms
 {
     class Supervisor
     {
-        protected static Supervisor _instance = new Supervisor();
-        public static Supervisor Instance
-        {
-            get {
-                return _instance;
-            }
-        }
+        public static readonly Supervisor Instance = new Supervisor();
 
         protected List<IManager> PlatformManagers = new List<IManager>();
 
@@ -28,11 +22,11 @@ namespace Usher.Platforms
                                 .Where(p => p.GetCustomAttributes(typeof(ManagerAttribute), true).Length > 0);
 
             // Instantiate platform managers from the config file
-            foreach (Type t in pManagerTypes) {
+            foreach (var t in pManagerTypes) {
                 var ctor = t.GetConstructors().First();
                 var attr = (ManagerAttribute)t.GetCustomAttributes(typeof(ManagerAttribute), true).First();
 
-                foreach (Config.Entities.PlatformInstance config
+                foreach (var config
                             in Config.Devices.Instance.Platforms.Where(p => p.Platform == attr.Id).ToList()) {
 
                     var manager = (IManager)ctor.Invoke(new object[]{config.Instance, config.Config});

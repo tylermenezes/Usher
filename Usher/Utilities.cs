@@ -27,7 +27,7 @@ namespace Usher
 
         public static int[] ColorTemperatureToRgb(int temperature)
         {
-            float fTemp = temperature/100;
+            var fTemp = ((float)temperature)/100;
         
             double r = 255;
             double g = 255;

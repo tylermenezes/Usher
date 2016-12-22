@@ -12,29 +12,29 @@ namespace Usher.PluginFramework.Base.Residential
             Devices = roomDevices;
         }
 
-        protected Thread runningScene;
+        protected Thread RunningScene;
         public void StopRunningScene()
         {
-            if (runningScene != null && runningScene.IsAlive) {
-                runningScene.Abort();
+            if (RunningScene != null && RunningScene.IsAlive) {
+                RunningScene.Abort();
             }
         }
 
-        public delegate void sceneDelegate();
-        public void RunScene(sceneDelegate toRun)
+        public delegate void SceneDelegate();
+        public void RunScene(SceneDelegate toRun)
         {
             StopRunningScene();
-            runningScene = (new Thread(() => {
+            RunningScene = (new Thread(() => {
                 toRun();
             }));
-            runningScene.Start();
+            RunningScene.Start();
         }
 
-        protected int[] desiredRgbw = new int[]{0, 0, 0, 255, 0};
+        protected int[] DesiredRgbw = new int[]{0, 0, 0, 255, 0};
         public void SetRgb(int r, int g, int b, int ww, int cw)
         {
-            desiredRgbw = new int[]{r, g, b, ww, cw};
-            if (!isLocked) {
+            DesiredRgbw = new int[]{r, g, b, ww, cw};
+            if (!IsLocked) {
                 Devices
                     .OfType<IRgbBulb>()
                     .ToList()
@@ -42,17 +42,17 @@ namespace Usher.PluginFramework.Base.Residential
             }
         }
 
-        protected decimal desiredBrightness = 0.0M;
+        protected decimal DesiredBrightness = 0.0M;
         public decimal Dim
         {
             get
             {
-                return desiredBrightness;
+                return DesiredBrightness;
             }
             set
             {
-                desiredBrightness = value;
-                if (!isLocked) {
+                DesiredBrightness = value;
+                if (!IsLocked) {
                     Devices
                         .OfType<IDimmableBulb>()
                         .ToList()
@@ -61,10 +61,10 @@ namespace Usher.PluginFramework.Base.Residential
             }
         }
 
-        protected bool isLocked = false;
+        public bool IsLocked { get; protected set; }
         public void Lock(decimal brightness, int r, int g, int b, int ww, int cw)
         {
-            isLocked = true;
+            IsLocked = true;
             Devices
                 .OfType<IDimmableBulb>()
                 .ToList()
@@ -77,12 +77,12 @@ namespace Usher.PluginFramework.Base.Residential
 
         public void Unlock()
         {
-            isLocked = false;
+            IsLocked = false;
             SetRgb();
             Dim = Dim;
         }
 
-        public void restoreBeforeForce()
+        public void RestoreBeforeForce()
         {
             SetRgb();
             Dim = Dim;
@@ -93,11 +93,11 @@ namespace Usher.PluginFramework.Base.Residential
         {
             get
             {
-                return desiredRgbw[1];
+                return DesiredRgbw[1];
             }
             set
             {
-                desiredRgbw[1] = value;
+                DesiredRgbw[1] = value;
                 SetRgb();
             }
         }
@@ -105,11 +105,11 @@ namespace Usher.PluginFramework.Base.Residential
         {
             get
             {
-                return desiredRgbw[2];
+                return DesiredRgbw[2];
             }
             set
             {
-                desiredRgbw[2] = value;
+                DesiredRgbw[2] = value;
                 SetRgb();
             }
         }
@@ -117,35 +117,35 @@ namespace Usher.PluginFramework.Base.Residential
         {
             get
             {
-                return desiredRgbw[3];
+                return DesiredRgbw[3];
             }
             set
             {
-                desiredRgbw[3] = value;
+                DesiredRgbw[3] = value;
                 SetRgb();
             }
         }
-        public int WW
+        public int Ww
         {
             get
             {
-                return desiredRgbw[4];
+                return DesiredRgbw[4];
             }
             set
             {
-                desiredRgbw[4] = value;
+                DesiredRgbw[4] = value;
                 SetRgb();
             }
         }
-        public int CW
+        public int Cw
         {
             get
             {
-                return desiredRgbw[5];
+                return DesiredRgbw[5];
             }
             set
             {
-                desiredRgbw[5] = value;
+                DesiredRgbw[5] = value;
                 SetRgb();
             }
         }
@@ -170,15 +170,15 @@ namespace Usher.PluginFramework.Base.Residential
 
         public void SetRgb()
         {
-            SetRgb(desiredRgbw[0], desiredRgbw[1], desiredRgbw[2], desiredRgbw[3], desiredRgbw[4]);
+            SetRgb(DesiredRgbw[0], DesiredRgbw[1], DesiredRgbw[2], DesiredRgbw[3], DesiredRgbw[4]);
         }
 
         public int Temperature
         {
             set
             {
-                int[] rgb = Usher.Utilities.ColorTemperatureToRgb(value);
-                desiredRgbw = new int[]{rgb[0], rgb[1], rgb[2], 0, 0};
+                var rgb = Usher.Utilities.ColorTemperatureToRgb(value);
+                DesiredRgbw = new int[]{rgb[0], rgb[1], rgb[2], 0, 0};
                 SetRgb();
             }
         }

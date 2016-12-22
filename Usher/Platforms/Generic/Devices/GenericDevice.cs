@@ -5,29 +5,17 @@ namespace Usher.Platforms.Generic.Devices
 {
     public abstract class GenericDevice
     {
-        abstract public string Provider { get; }
-        abstract public string Instance { get; }
-        virtual public string Id { get; protected set; }
+        public abstract string Provider { get; }
+        public abstract string Instance { get; }
+        public virtual string Id { get; protected set; }
 
-        public string Uri
-        {
-            get
-            {
-                return String.Format("{0}://{1}/{2}", Provider, Instance, Id);
-            }
-        }
+        public string Uri => $"{Provider}://{Instance}/{Id}";
 
-        public string Name { get { return config.Name; } set { config.Name = value; }}
-        public string Location { get { return config.Location; } set { config.Location = value; }}
-        public string Description { get { return config.Description; } set { config.Location = value; }}
-        public List<string> Tags { get { return config.Tags; } }
+        public string Name { get { return Config.Name; } set { Config.Name = value; }}
+        public string Location { get { return Config.Location; } set { Config.Location = value; }}
+        public string Description { get { return Config.Description; } set { Config.Location = value; }}
+        public List<string> Tags => Config.Tags;
 
-        protected Config.Entities.Node config
-        {
-            get
-            {
-                return Config.Devices.Instance.NodeFromUri(Uri);
-            }
-        }
+        protected Config.Entities.Node Config => Usher.Config.Devices.Instance.NodeFromUri(Uri);
     }
 }

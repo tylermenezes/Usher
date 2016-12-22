@@ -13,36 +13,22 @@ namespace Usher.Platforms.Web
     [ManagerAttribute("web")]
     public class Manager : IManager
     {
-        public string Provider { get { return "web"; } }
+        public string Provider => "web";
         public string Instance { get; protected set; }
-        public string Uri
-        {
-            get
-            {
-                return string.Format("{0}://{1}", Provider, Instance);
-            }
-        }
+        public string Uri => $"{Provider}://{Instance}";
 
         public event ManagerReadyHandler OnReady;
         public event ManagerStoppedHandler OnStop;
         public event ManagerErrorHandler OnError;
 
-        private WebCommandSource commandSource;
-        public IEnumerable<IDevice> Devices
-        {
-            get
-            {
-                return new IDevice[]{
-                    commandSource
-                };
-            }
-        }
+        private readonly WebCommandSource _commandSource;
+        public IEnumerable<IDevice> Devices => new IDevice[]{ _commandSource };
 
         public Manager(string instance, Dictionary<string, string> config)
         {
             Instance = instance;
-            commandSource = new WebCommandSource(this);
-            listener.Prefixes.Add(String.Format("http://*:{0}/api/", instance));
+            _commandSource = new WebCommandSource(this);
+            Listener.Prefixes.Add($"http://*:{instance}/api/");
         }
 
         public Task Start()
@@ -50,17 +36,17 @@ namespace Usher.Platforms.Web
             var semaphore = new SemaphoreSlim(0, 1);
             ThreadPool.QueueUserWorkItem((o) =>
             {
-                listener.Start();
+                Listener.Start();
                 semaphore.Release();
-                OnReady(this);
+                OnReady?.Invoke(this);
                 try
                 {
-                    while (listener.IsListening)
+                    while (Listener.IsListening)
                     {
                         ThreadPool.QueueUserWorkItem((c) =>
                         {
-                            httpHandleRequest((HttpListenerContext)c);
-                        }, listener.GetContext());
+                            HttpHandleRequest((HttpListenerContext)c);
+                        }, Listener.GetContext());
                     }
                 }
                 catch { OnError(this); }
@@ -71,40 +57,40 @@ namespace Usher.Platforms.Web
         public Task Stop()
         {
             var task = new Task(() => {
-                listener.Stop();
-                listener.Close();
+                Listener.Stop();
+                Listener.Close();
             });
             task.Start();
-            OnStop(this);
+            OnStop?.Invoke(this);
             return task;
         }
 
-        protected readonly HttpListener listener = new HttpListener();
-        protected void httpHandleRequest(HttpListenerContext ctx)
+        protected readonly HttpListener Listener = new HttpListener();
+        protected void HttpHandleRequest(HttpListenerContext ctx)
         {
             try
             {
-                string rstr = httpResponse(ctx.Request);
-                byte[] buf = Encoding.UTF8.GetBytes(rstr);
+                var rstr = HttpResponse(ctx.Request);
+                var buf = Encoding.UTF8.GetBytes(rstr);
                 ctx.Response.ContentLength64 = buf.Length;
                 ctx.Response.OutputStream.Write(buf, 0, buf.Length);
             }
             catch (Exception e)
             {
                 Utilities.Logger.Error(e);
-                OnError(this);
+                OnError?.Invoke(this);
             }
             finally
             {
                 ctx.Response.OutputStream.Close();
             }
         }
-        protected string httpResponse(HttpListenerRequest request)
+        protected string HttpResponse(HttpListenerRequest request)
         {
             var pathParts = request.Url.AbsolutePath.Split('/');
             var command = pathParts[2];
             var args = pathParts.Skip(3).ToArray();
-            commandSource.dispatchCommand(command, args);
+            _commandSource.DispatchCommand(command, args);
             return "ok";
         }
     }

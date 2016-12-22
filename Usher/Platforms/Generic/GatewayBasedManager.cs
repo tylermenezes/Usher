@@ -1,46 +1,42 @@
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Usher.Platforms.Generic.Devices;
+
+// ReSharper disable VirtualMemberCallInConstructor
 namespace Usher.Platforms.Generic
 {
     abstract class GatewayBasedManager : IManager
     {
-        abstract public string Provider { get; }
-        virtual public string Instance { get; protected set; }
-        virtual public string Uri
-        {
-            get
-            {
-                return string.Format("{0}://{1}", Provider, Instance);
-            }
-        }
+        public abstract string Provider { get; }
+        public virtual string Instance { get; protected set; }
+        public virtual string Uri => $"{Provider}://{Instance}";
 
         public event ManagerErrorHandler OnError;
         public event ManagerReadyHandler OnReady;
         public event ManagerStoppedHandler OnStop;
 
-        public IEnumerable<IDevice> Devices { get { return gateway.Devices; }}
-        protected IGateway gateway;
+        public IEnumerable<IDevice> Devices => Gateway.Devices;
+        protected IGateway Gateway;
 
         public GatewayBasedManager(string instance, Dictionary<string, string> config)
         {
             Instance = instance;
-            gateway = getGateway(instance, config);
-            gateway.OnDisconnected += delegate(IGateway sender) { OnStop(this); };
-            gateway.OnError += delegate(IGateway sender) { OnError(this); };
-            gateway.OnReady += delegate(IGateway sender) { OnReady(this); };
+            Gateway = GetGateway(instance, config);
+            Gateway.OnDisconnected += delegate(IGateway sender) { OnStop?.Invoke(this); };
+            Gateway.OnError += delegate(IGateway sender) { OnError?.Invoke(this); };
+            Gateway.OnReady += delegate(IGateway sender) { OnReady?.Invoke(this); };
         }
 
-        protected abstract IGateway getGateway(string instance, Dictionary<string, string> config);
+        protected abstract IGateway GetGateway(string instance, Dictionary<string, string> config);
 
         public Task Start()
         {
-            return gateway.Start();
+            return Gateway.Start();
         }
 
         public Task Stop()
         {
-            return gateway.Stop();
+            return Gateway.Stop();
         }
     }
 }
