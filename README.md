@@ -17,8 +17,8 @@ It turns out that:
 
 - The actual dotnet for linux goes by the identifier "netcoreapp", but all packages reference the real "net451" .NET, so you can't install any packages if you use it.
 - netcoreapp1.0, the lowest release, is actually based on an unreleased preview of .NET 5.0, because versions don't mean anything.
-- netcoreapp1.0 is slightly different than .NET, anyway, so it needs a bunch of NuGet packages documented only in StackOverflow threads.
-- You can reference net451 (or any other version you like), EXCEPT
-- net is provided by Mono, which comes with .NET Core, but NOT ALWAYS COMPLETELY, resulting in weird missing assemblies.
+- netcoreapp1.0 is slightly different than .NET, anyway, so it needs a bunch of NuGet packages released by Microsoft but documented only in StackOverflow threads.
+- You can reference net451 (or any other version you like) to fix a lot of problems, EXCEPT...
+- net451 and similar are provided by Mono, which comes with .NET Core, but not consistently, resulting in weird missing assemblies.
 
 None of this is documented, so to save you a bunch of time, the solution is to install mono-complete and compile for net451.
